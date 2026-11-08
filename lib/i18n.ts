@@ -78,6 +78,7 @@ const sk = {
   removeVia: "Odstrániť",
   transferTime: "Čas na prestup",
   options: "Možnosti",
+  credit: "Vytvoril Martin Lužák spolu s Claude, 2026",
 };
 
 type Dict = typeof sk;
@@ -141,6 +142,7 @@ const cs: Dict = {
   removeVia: "Odebrat",
   transferTime: "Čas na přestup",
   options: "Možnosti",
+  credit: "Vytvořil Martin Lužák spolu s Claude, 2026",
 };
 
 const hu: Dict = {
@@ -202,6 +204,7 @@ const hu: Dict = {
   removeVia: "Eltávolítás",
   transferTime: "Átszállási idő",
   options: "Beállítások",
+  credit: "Készítette Martin Lužák a Claude-dal közösen, 2026",
 };
 
 const pl: Dict = {
@@ -263,6 +266,7 @@ const pl: Dict = {
   removeVia: "Usuń",
   transferTime: "Czas na przesiadkę",
   options: "Opcje",
+  credit: "Stworzył Martin Lužák wspólnie z Claude, 2026",
 };
 
 const de: Dict = {
@@ -324,6 +328,7 @@ const de: Dict = {
   removeVia: "Entfernen",
   transferTime: "Umstiegszeit",
   options: "Optionen",
+  credit: "Erstellt von Martin Lužák gemeinsam mit Claude, 2026",
 };
 
 const en: Dict = {
@@ -385,6 +390,7 @@ const en: Dict = {
   removeVia: "Remove",
   transferTime: "Transfer time",
   options: "Options",
+  credit: "Made by Martin Lužák together with Claude, 2026",
 };
 
 export const DICTS: Record<Lang, Dict> = { sk, cs, hu, pl, de, en };

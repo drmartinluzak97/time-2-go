@@ -217,3 +217,7 @@ input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px s
 
 .foot { margin-top: 24px; font-size: 12px; color: var(--muted); }
 .foot p { margin: 4px 0; }
+.foot-map { margin-bottom: 12px; font-size: 14px; }
+.contact a { font-weight: 600; text-decoration: none; }
+.contact a:hover { text-decoration: underline; }
+.credit { margin-top: 12px !important; padding-top: 12px; border-top: 1px solid var(--line); font-weight: 600; color: var(--text); }

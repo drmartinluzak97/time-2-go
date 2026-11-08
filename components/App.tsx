@@ -388,8 +388,17 @@ export default function App() {
           )}
 
           <footer className="foot">
+            <button type="button" className="map-toggle foot-map" aria-pressed={showMap} onClick={() => setShowMap((v) => !v)}>
+              <span aria-hidden>🗺</span> {showMap ? t.hideMap : t.showMap}
+            </button>
             <p>{t.disclaimer}</p>
             <p>{t.attribution}</p>
+            <p className="credit">{t.credit}</p>
+            <p className="contact">
+              <a href="https://martinluzak.sk" target="_blank" rel="noopener">martinluzak.sk</a>
+              <span aria-hidden> · </span>
+              <a href="mailto:hello@martinluzak.sk">hello@martinluzak.sk</a>
+            </p>
           </footer>
         </section>
 
