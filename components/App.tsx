@@ -6,6 +6,8 @@ import PlaceInput from "./PlaceInput";
 import ItineraryCard from "./ItineraryCard";
 import Departures from "./Departures";
 import Flag from "./Flag";
+import { JourneyLists } from "./SavedLists";
+import { useSaved, type SavedJourney } from "@/lib/saved";
 import { DICTS, LANGS, LANG_NAMES, LOCALES, type Lang } from "@/lib/i18n";
 import { MODE_GROUPS, type ModeGroup, type PlanResponse, type Selected } from "@/lib/motis";
 
@@ -66,6 +68,8 @@ export default function App() {
   const [message, setMessage] = useState("");
   const [selected, setSelected] = useState(0);
   const [restored, setRestored] = useState<{ search: boolean } | null>(null);
+  const saved = useSaved();
+  const { addRecentJourney } = saved;
 
   // Restore language and state from the URL on first load.
   useEffect(() => {
@@ -133,6 +137,22 @@ export default function App() {
     try { localStorage.setItem("showMap", showMap ? "1" : "0"); } catch { /* ignore */ }
   }, [showMap]);
 
+  const snapshot = useMemo<SavedJourney | null>(
+    () =>
+      from && to
+        ? {
+            from,
+            to,
+            vias: vias.filter((v): v is { place: Selected; stay: number } => Boolean(v.place?.isStop)),
+            maxTransfers,
+            directOnly,
+            minTransfer,
+            groups,
+          }
+        : null,
+    [from, to, vias, maxTransfers, directOnly, minTransfer, groups],
+  );
+
   const search = useCallback(
     async (cursor?: string) => {
       if (!from || !to) {
@@ -168,11 +188,12 @@ export default function App() {
         setPlan(data);
         setSelected(0);
         setStatus("idle");
+        if (!cursor && snapshot) addRecentJourney(snapshot);
       } catch {
         setStatus("error");
       }
     },
-    [from, to, when, arriveBy, groups, maxTransfers, directOnly, minTransfer, vias, lang, t.pickBoth],
+    [from, to, when, arriveBy, groups, maxTransfers, directOnly, minTransfer, vias, lang, t.pickBoth, snapshot, addRecentJourney],
   );
 
   // Run the search automatically when a shared link is opened.
@@ -188,6 +209,21 @@ export default function App() {
     [plan],
   );
   const current = itineraries[selected] ?? null;
+
+  function openJourney(j: SavedJourney) {
+    setTab("journey");
+    setFrom(j.from);
+    setTo(j.to);
+    setVias(j.vias.map((v) => ({ place: v.place, stay: v.stay })));
+    setMaxTransfers(j.maxTransfers);
+    setDirectOnly(j.directOnly);
+    setMinTransfer(j.minTransfer);
+    setGroups(j.groups.length ? j.groups : ALL_GROUPS);
+    setWhen("");
+    setArriveBy(false);
+    setRestored({ search: true });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   function updateVia(i: number, patch: Partial<Via>) {
     setVias((vs) => vs.map((v, j) => (j === i ? { ...v, ...patch } : v)));
@@ -371,6 +407,20 @@ export default function App() {
               {message && <p className="notice">{message}</p>}
               {status === "error" && <p className="notice error">{t.error}</p>}
 
+              {plan && snapshot && (
+                <div className="results-head">
+                  <span className="results-title">{snapshot.from.name} → {snapshot.to.name}</span>
+                  <button
+                    type="button"
+                    className={`fav-btn ${saved.isFavJourney(snapshot) ? "on" : ""}`}
+                    aria-pressed={saved.isFavJourney(snapshot)}
+                    onClick={() => saved.toggleFavJourney(snapshot)}
+                  >
+                    {saved.isFavJourney(snapshot) ? `★ ${t.inFavorites}` : `☆ ${t.addFavorite}`}
+                  </button>
+                </div>
+              )}
+
               {plan && (
                 <div className="results">
                   {plan.previousPageCursor && (
@@ -395,9 +445,10 @@ export default function App() {
                   )}
                 </div>
               )}
+              <JourneyLists saved={saved} t={t} onOpen={openJourney} />
             </>
           ) : (
-            <Departures t={t} lang={lang} locale={locale} stop={stop} onStop={setStop} />
+            <Departures t={t} lang={lang} locale={locale} stop={stop} onStop={setStop} saved={saved} />
           )}
 
           <footer className="foot">
@@ -406,6 +457,7 @@ export default function App() {
             </button>
             <p>{t.disclaimer}</p>
             <p>{t.attribution}</p>
+            <p><a href={`/sukromie?lang=${lang}`}>{t.privacy}</a></p>
             <p className="credit">{t.credit}</p>
             <p className="contact">
               <a href="https://martinluzak.sk" target="_blank" rel="noopener">martinluzak.sk</a>

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import PlaceInput from "./PlaceInput";
+import { StopLists } from "./SavedLists";
+import type { Saved } from "@/lib/saved";
 import {
   dedupeStopTimes, delayMinutes, formatDate, formatTime, legColor, legTextColor, lineLabel,
   type Selected, type StopTimesResponse,
@@ -14,14 +16,16 @@ interface Props {
   locale: string;
   stop: Selected | null;
   onStop: (s: Selected | null) => void;
+  saved: Saved;
 }
 
-export default function Departures({ t, lang, locale, stop, onStop }: Props) {
+export default function Departures({ t, lang, locale, stop: selectedStop, onStop, saved }: Props) {
   const [data, setData] = useState<StopTimesResponse | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState("");
 
-  async function load(cursor?: string) {
+  async function load(cursor?: string, override?: Selected) {
+    const stop = override ?? selectedStop;
     if (!stop || !stop.isStop) {
       setMessage(t.pickStop);
       return;
@@ -35,6 +39,7 @@ export default function Departures({ t, lang, locale, stop, onStop }: Props) {
       if (!res.ok) throw new Error();
       const json: StopTimesResponse = await res.json();
       setData({ ...json, stopTimes: dedupeStopTimes(json.stopTimes ?? []) });
+      if (!cursor) saved.addRecentStop(stop);
       setStatus("idle");
     } catch {
       setStatus("error");
@@ -50,7 +55,7 @@ export default function Departures({ t, lang, locale, stop, onStop }: Props) {
           load();
         }}
       >
-        <PlaceInput label={t.stop} placeholder={t.placeholderStop} value={stop} onChange={onStop} lang={lang} stopsOnly />
+        <PlaceInput label={t.stop} placeholder={t.placeholderStop} value={selectedStop} onChange={onStop} lang={lang} stopsOnly />
         <button className="primary" type="submit" disabled={status === "loading"}>
           {status === "loading" ? t.searching : t.showDepartures}
         </button>
@@ -58,6 +63,20 @@ export default function Departures({ t, lang, locale, stop, onStop }: Props) {
 
       {message && <p className="notice">{message}</p>}
       {status === "error" && <p className="notice error">{t.error}</p>}
+
+      {data && selectedStop?.isStop && (
+        <div className="results-head">
+          <span className="results-title">{selectedStop.name}</span>
+          <button
+            type="button"
+            className={`fav-btn ${saved.isFavStop(selectedStop) ? "on" : ""}`}
+            aria-pressed={saved.isFavStop(selectedStop)}
+            onClick={() => saved.toggleFavStop(selectedStop)}
+          >
+            {saved.isFavStop(selectedStop) ? `★ ${t.inFavorites}` : `☆ ${t.addFavorite}`}
+          </button>
+        </div>
+      )}
 
       {data && (
         <>
@@ -106,6 +125,15 @@ export default function Departures({ t, lang, locale, stop, onStop }: Props) {
           )}
         </>
       )}
+      <StopLists
+        saved={saved}
+        t={t}
+        onOpen={(st) => {
+          onStop(st);
+          load(undefined, st);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+      />
     </div>
   );
 }

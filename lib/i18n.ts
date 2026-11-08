@@ -80,6 +80,19 @@ const sk = {
   minTransferTime: "Min. čas na prestup",
   options: "Možnosti",
   credit: "Vytvoril Martin Lužák spolu s Claude, 2026",
+  favorites: "Obľúbené trasy",
+  favoriteStops: "Obľúbené zastávky",
+  recent: "Posledné hľadania",
+  recentStops: "Posledné zastávky",
+  addFavorite: "Pridať do obľúbených",
+  inFavorites: "V obľúbených",
+  saveHistory: "Ukladať históriu v tomto prehliadači",
+  clearHistory: "Vymazať históriu",
+  rename: "Premenovať",
+  remove: "Odstrániť",
+  save: "Uložiť",
+  privacy: "Súkromie",
+  back: "Späť na vyhľadávanie",
 };
 
 type Dict = typeof sk;
@@ -145,6 +158,19 @@ const cs: Dict = {
   minTransferTime: "Min. čas na přestup",
   options: "Možnosti",
   credit: "Vytvořil Martin Lužák spolu s Claude, 2026",
+  favorites: "Oblíbené trasy",
+  favoriteStops: "Oblíbené zastávky",
+  recent: "Poslední hledání",
+  recentStops: "Poslední zastávky",
+  addFavorite: "Přidat do oblíbených",
+  inFavorites: "V oblíbených",
+  saveHistory: "Ukládat historii v tomto prohlížeči",
+  clearHistory: "Smazat historii",
+  rename: "Přejmenovat",
+  remove: "Odebrat",
+  save: "Uložit",
+  privacy: "Soukromí",
+  back: "Zpět na vyhledávání",
 };
 
 const hu: Dict = {
@@ -208,6 +234,19 @@ const hu: Dict = {
   minTransferTime: "Min. átszállási idő",
   options: "Beállítások",
   credit: "Készítette Martin Lužák a Claude-dal közösen, 2026",
+  favorites: "Kedvenc útvonalak",
+  favoriteStops: "Kedvenc megállók",
+  recent: "Legutóbbi keresések",
+  recentStops: "Legutóbbi megállók",
+  addFavorite: "Hozzáadás a kedvencekhez",
+  inFavorites: "Kedvencekben",
+  saveHistory: "Előzmények mentése ebben a böngészőben",
+  clearHistory: "Előzmények törlése",
+  rename: "Átnevezés",
+  remove: "Eltávolítás",
+  save: "Mentés",
+  privacy: "Adatvédelem",
+  back: "Vissza a kereséshez",
 };
 
 const pl: Dict = {
@@ -271,6 +310,19 @@ const pl: Dict = {
   minTransferTime: "Min. czas na przesiadkę",
   options: "Opcje",
   credit: "Stworzył Martin Lužák wspólnie z Claude, 2026",
+  favorites: "Ulubione trasy",
+  favoriteStops: "Ulubione przystanki",
+  recent: "Ostatnie wyszukiwania",
+  recentStops: "Ostatnie przystanki",
+  addFavorite: "Dodaj do ulubionych",
+  inFavorites: "W ulubionych",
+  saveHistory: "Zapisuj historię w tej przeglądarce",
+  clearHistory: "Wyczyść historię",
+  rename: "Zmień nazwę",
+  remove: "Usuń",
+  save: "Zapisz",
+  privacy: "Prywatność",
+  back: "Wróć do wyszukiwania",
 };
 
 const de: Dict = {
@@ -334,6 +386,19 @@ const de: Dict = {
   minTransferTime: "Min. Umstiegszeit",
   options: "Optionen",
   credit: "Erstellt von Martin Lužák gemeinsam mit Claude, 2026",
+  favorites: "Favoriten",
+  favoriteStops: "Favorisierte Haltestellen",
+  recent: "Letzte Suchen",
+  recentStops: "Letzte Haltestellen",
+  addFavorite: "Zu Favoriten hinzufügen",
+  inFavorites: "In Favoriten",
+  saveHistory: "Verlauf in diesem Browser speichern",
+  clearHistory: "Verlauf löschen",
+  rename: "Umbenennen",
+  remove: "Entfernen",
+  save: "Speichern",
+  privacy: "Datenschutz",
+  back: "Zurück zur Suche",
 };
 
 const en: Dict = {
@@ -397,6 +462,19 @@ const en: Dict = {
   minTransferTime: "Min. transfer time",
   options: "Options",
   credit: "Made by Martin Lužák together with Claude, 2026",
+  favorites: "Favourite routes",
+  favoriteStops: "Favourite stops",
+  recent: "Recent searches",
+  recentStops: "Recent stops",
+  addFavorite: "Add to favourites",
+  inFavorites: "In favourites",
+  saveHistory: "Save history in this browser",
+  clearHistory: "Clear history",
+  rename: "Rename",
+  remove: "Remove",
+  save: "Save",
+  privacy: "Privacy",
+  back: "Back to search",
 };
 
 export const DICTS: Record<Lang, Dict> = { sk, cs, hu, pl, de, en };

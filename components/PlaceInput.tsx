@@ -32,10 +32,12 @@ export default function PlaceInput({ label, placeholder, value, onChange, lang, 
   const [loading, setLoading] = useState(false);
   const typed = useRef(false);
 
-  // Keep text in sync when value is changed from outside (swap, URL restore).
+  // Keep text in sync when value is changed from outside (swap, URL restore, favourites).
+  // A null value while the user is typing must not wipe what they typed.
   useEffect(() => {
-    setText(value?.name ?? "");
-  }, [value?.id, value?.name]);
+    if (value) setText(value.name);
+    else if (!typed.current) setText("");
+  }, [value?.id, value?.name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!typed.current) return;
@@ -92,6 +94,7 @@ export default function PlaceInput({ label, placeholder, value, onChange, lang, 
           onChange={(e) => {
             typed.current = true;
             setText(e.target.value);
+            setMatches([]); // never show suggestions for the previous text
             if (value) onChange(null);
           }}
           onFocus={(e) => {
