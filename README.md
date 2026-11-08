@@ -48,6 +48,43 @@ Každý `git push` do vetvy `main` sa potom automaticky nasadí. Ostatné vetvy 
 | `MOTIS_API_URL` | Adresa MOTIS servera | `https://api.transitous.org` |
 | `MOTIS_USER_AGENT` | Identifikácia aplikácie pre API | `time-2-go/0.1 (+github odkaz)` |
 
+## Android aplikácia
+
+Priečinok `android/` obsahuje Android aplikáciu postavenú na [Capacitor](https://capacitorjs.com).
+Aplikácia na celú obrazovku otvorí https://time-2-go.vercel.app, takže zmeny webu sa v nej
+prejavia hneď bez vydania novej verzie. Bez internetu zobrazí stránku `android-shell/offline.html`.
+
+- Identifikátor balíka: `sk.martinluzak.time2go`
+- Konfigurácia: `capacitor.config.json`
+
+### Zostavenie
+
+Potrebuješ JDK 21 a Android SDK (platforma 36). Najjednoduchšie je nainštalovať Android Studio.
+
+1. Podpisový kľúč (`.jks`) a heslo **nikdy nedávaj do repozitára**. Vytvor súbor
+   `android/keystore.properties` (je v `.gitignore`):
+
+   ```properties
+   storeFile=/cesta/k/time2go-release.jks
+   storePassword=HESLO
+   keyAlias=time2go
+   keyPassword=HESLO
+   ```
+
+2. Pred každou novou verziou zvýš `versionCode` (o 1) a `versionName` v `android/app/build.gradle`.
+3. Zostav:
+
+   ```bash
+   npx cap sync android
+   cd android
+   ./gradlew assembleRelease bundleRelease
+   ```
+
+Výsledok:
+
+- `android/app/build/outputs/apk/release/app-release.apk` na ručnú inštaláciu do mobilu
+- `android/app/build/outputs/bundle/release/app-release.aab` na nahranie do Google Play
+
 ## Štruktúra
 
 ```

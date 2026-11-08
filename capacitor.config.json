@@ -1,0 +1,13 @@
+{
+  "appId": "sk.martinluzak.time2go",
+  "appName": "time2go",
+  "webDir": "android-shell",
+  "server": {
+    "url": "https://time-2-go.vercel.app",
+    "errorPath": "offline.html",
+    "cleartext": false
+  },
+  "android": {
+    "backgroundColor": "#0b6bcb"
+  }
+}
