@@ -57,6 +57,7 @@ export default function App() {
   const [groups, setGroups] = useState<ModeGroup[]>(ALL_GROUPS);
   const [maxTransfers, setMaxTransfers] = useState<number | null>(null);
   const [directOnly, setDirectOnly] = useState(false);
+  const [minTransfer, setMinTransfer] = useState(0);
   const [vias, setVias] = useState<Via[]>([]);
   const [showMap, setShowMap] = useState(true);
 
@@ -81,6 +82,8 @@ export default function App() {
     if (q.get("arrive") === "1") setArriveBy(true);
     const m = q.get("modes");
     if (m) setGroups(m.split(",").filter((g): g is ModeGroup => (ALL_GROUPS as string[]).includes(g)));
+    const mtt = Number(q.get("minTransfer"));
+    if (STAY_OPTIONS.includes(mtt)) setMinTransfer(mtt);
     const mt = Number(q.get("maxTransfers"));
     if (TRANSFER_OPTIONS.includes(mt)) setMaxTransfers(mt);
     if (q.get("direct") === "1") setDirectOnly(true);
@@ -115,6 +118,7 @@ export default function App() {
     if (groups.length !== ALL_GROUPS.length) q.set("modes", groups.join(","));
     if (maxTransfers !== null) q.set("maxTransfers", String(maxTransfers));
     if (directOnly) q.set("direct", "1");
+    if (minTransfer) q.set("minTransfer", String(minTransfer));
     vias.forEach((v, i) => {
       const enc = encodePlace(v.place);
       if (!enc) return;
@@ -123,7 +127,7 @@ export default function App() {
     });
     const qs = q.toString();
     window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
-  }, [restored, tab, from, to, stop, when, arriveBy, groups, maxTransfers, directOnly, vias]);
+  }, [restored, tab, from, to, stop, when, arriveBy, groups, maxTransfers, directOnly, minTransfer, vias]);
 
   useEffect(() => {
     try { localStorage.setItem("showMap", showMap ? "1" : "0"); } catch { /* ignore */ }
@@ -151,6 +155,7 @@ export default function App() {
         }
         if (directOnly) params.set("maxTransfers", "0");
         else if (maxTransfers !== null) params.set("maxTransfers", String(maxTransfers));
+        if (minTransfer && !directOnly) params.set("minTransferTime", String(minTransfer));
         const viaStops = vias.filter((v) => v.place?.isStop);
         if (viaStops.length) {
           params.set("via", viaStops.map((v) => v.place!.id).join(","));
@@ -167,7 +172,7 @@ export default function App() {
         setStatus("error");
       }
     },
-    [from, to, when, arriveBy, groups, maxTransfers, directOnly, vias, lang, t.pickBoth],
+    [from, to, when, arriveBy, groups, maxTransfers, directOnly, minTransfer, vias, lang, t.pickBoth],
   );
 
   // Run the search automatically when a shared link is opened.
@@ -340,6 +345,14 @@ export default function App() {
                       <option value="">{directOnly ? "0" : t.any}</option>
                       {TRANSFER_OPTIONS.map((n) => (
                         <option key={n} value={n}>{n}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="field transfers">
+                    <span>{t.minTransferTime}</span>
+                    <select value={minTransfer} disabled={directOnly} onChange={(e) => setMinTransfer(Number(e.target.value))}>
+                      {STAY_OPTIONS.map((m) => (
+                        <option key={m} value={m}>{m} min</option>
                       ))}
                     </select>
                   </label>

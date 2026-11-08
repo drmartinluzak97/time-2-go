@@ -77,6 +77,7 @@ const sk = {
   addVia: "+ Cez zastávku",
   removeVia: "Odstrániť",
   transferTime: "Čas na prestup",
+  minTransferTime: "Min. čas na prestup",
   options: "Možnosti",
   credit: "Vytvoril Martin Lužák spolu s Claude, 2026",
 };
@@ -141,6 +142,7 @@ const cs: Dict = {
   addVia: "+ Přes zastávku",
   removeVia: "Odebrat",
   transferTime: "Čas na přestup",
+  minTransferTime: "Min. čas na přestup",
   options: "Možnosti",
   credit: "Vytvořil Martin Lužák spolu s Claude, 2026",
 };
@@ -203,6 +205,7 @@ const hu: Dict = {
   addVia: "+ Érintett megálló",
   removeVia: "Eltávolítás",
   transferTime: "Átszállási idő",
+  minTransferTime: "Min. átszállási idő",
   options: "Beállítások",
   credit: "Készítette Martin Lužák a Claude-dal közösen, 2026",
 };
@@ -265,6 +268,7 @@ const pl: Dict = {
   addVia: "+ Przez przystanek",
   removeVia: "Usuń",
   transferTime: "Czas na przesiadkę",
+  minTransferTime: "Min. czas na przesiadkę",
   options: "Opcje",
   credit: "Stworzył Martin Lužák wspólnie z Claude, 2026",
 };
@@ -327,6 +331,7 @@ const de: Dict = {
   addVia: "+ Über Haltestelle",
   removeVia: "Entfernen",
   transferTime: "Umstiegszeit",
+  minTransferTime: "Min. Umstiegszeit",
   options: "Optionen",
   credit: "Erstellt von Martin Lužák gemeinsam mit Claude, 2026",
 };
@@ -389,6 +394,7 @@ const en: Dict = {
   addVia: "+ Via stop",
   removeVia: "Remove",
   transferTime: "Transfer time",
+  minTransferTime: "Min. transfer time",
   options: "Options",
   credit: "Made by Martin Lužák together with Claude, 2026",
 };
