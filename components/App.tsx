@@ -15,7 +15,7 @@ const RouteMap = dynamic(() => import("./RouteMap"), { ssr: false, loading: () =
 
 type Tab = "journey" | "departures";
 const ALL_GROUPS: ModeGroup[] = ["rail", "bus", "city", "ferry"];
-const FLAG_ORDER: Lang[] = ["sk", "cs", "de", "hu", "en", "pl"];
+const FLAG_ORDER: Lang[] = ["sk", "cs", "de", "hu", "en", "pl", "uk"];
 const TRANSFER_OPTIONS = [1, 2, 3, 4, 5];
 const STAY_OPTIONS = [0, 3, 5, 10, 15, 30, 60, 90, 120];
 const MAX_VIAS = 2;
@@ -427,7 +427,10 @@ export default function App() {
                     <button className="ghost" type="button" onClick={() => search(plan.previousPageCursor)}>↑ {t.earlier}</button>
                   )}
                   {itineraries.length === 0 ? (
-                    <p className="notice">{t.noResults}</p>
+                    <p className="notice">
+                      {t.noResults}
+                      {(!from?.isStop || !to?.isStop) && <> {t.noResultsPlace}</>}
+                    </p>
                   ) : (
                     itineraries.map((it, i) => (
                       <ItineraryCard

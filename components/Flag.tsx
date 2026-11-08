@@ -46,6 +46,13 @@ export default function Flag({ lang }: { lang: Lang }) {
           <rect width="30" height="10" fill="#fff" />
         </svg>
       );
+    case "uk":
+      return (
+        <svg {...common}>
+          <rect width="30" height="20" fill="#ffd500" />
+          <rect width="30" height="10" fill="#005bbb" />
+        </svg>
+      );
     case "en":
       return (
         <svg {...common}>

@@ -106,7 +106,7 @@ export interface Selected {
   isStop: boolean;
 }
 
-export const COUNTRIES = ["SK", "CZ", "HU", "PL", "AT"] as const;
+export const COUNTRIES = ["SK", "CZ", "HU", "PL", "AT", "UA"] as const;
 
 export type ModeGroup = "rail" | "bus" | "city" | "ferry";
 export const MODE_GROUPS: Record<ModeGroup, string[]> = {
@@ -220,18 +220,30 @@ export function delayMinutes(actual?: string, scheduled?: string): number | null
   return Math.round((new Date(actual).getTime() - new Date(scheduled).getTime()) / 60000);
 }
 
-/** Clean up geocoder output: drop broken entries, merge duplicates from different feeds, prefer our 5 countries. */
+/** Clean up geocoder output: drop broken entries, merge duplicates from different feeds,
+ *  prefer our countries, and put a station before a same-named town (town centres are
+ *  sometimes not connected to any stop in the routing data). */
 export function cleanMatches(matches: GeocodeMatch[]): GeocodeMatch[] {
-  const seen = new Set<string>();
-  const out: GeocodeMatch[] = [];
-  const valid = matches.filter((m) => !(m.lat === -1 && m.lon === -1) && Number.isFinite(m.lat));
+  const norm = (x: string) => x.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+  const km = (a: GeocodeMatch, b: GeocodeMatch) => {
+    const dLat = (a.lat - b.lat) * 111;
+    const dLon = (a.lon - b.lon) * 111 * Math.cos((a.lat * Math.PI) / 180);
+    return Math.hypot(dLat, dLon);
+  };
   const ours = (m: GeocodeMatch) => (m.country && (COUNTRIES as readonly string[]).includes(m.country) ? 0 : 1);
-  valid.sort((a, b) => ours(a) - ours(b));
+  const valid = matches
+    .filter((m) => !(m.lat === -1 && m.lon === -1) && Number.isFinite(m.lat))
+    .sort((a, b) => ours(a) - ours(b));
+
+  const out: GeocodeMatch[] = [];
+  const isDup = (m: GeocodeMatch) => out.some((o) => o.type === m.type && norm(o.name) === norm(m.name) && km(o, m) < 3);
   for (const m of valid) {
-    const key = `${m.name.toLowerCase()}|${m.lat.toFixed(2)}|${m.lon.toFixed(2)}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push(m);
+    if (isDup(m)) continue;
+    if (m.type === "PLACE") {
+      const station = valid.find((x) => x.type === "STOP" && norm(x.name) === norm(m.name) && km(x, m) < 8);
+      if (station && !isDup(station)) out.push(station);
+    }
+    if (!isDup(m)) out.push(m);
   }
   return out.slice(0, 8);
 }

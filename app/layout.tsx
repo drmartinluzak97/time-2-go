@@ -2,9 +2,9 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "time2go – cestovné poriadky SK · CZ · HU · PL · AT",
+  title: "time2go – cestovné poriadky SK · CZ · HU · PL · AT · UA",
   description:
-    "Vyhľadávanie spojení vlakom, autobusom a MHD na Slovensku, v Česku, Maďarsku, Poľsku a Rakúsku.",
+    "Vyhľadávanie spojení vlakom, autobusom a MHD na Slovensku, v Česku, Maďarsku, Poľsku, Rakúsku a na Ukrajine.",
 };
 
 export const viewport: Viewport = {

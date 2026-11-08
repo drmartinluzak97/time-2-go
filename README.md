@@ -1,11 +1,11 @@
 # time2go
 
-Vyhľadávač spojení vlakom, autobusom a MHD pre **Slovensko, Česko, Maďarsko, Poľsko a Rakúsko**.
+Vyhľadávač spojení vlakom, autobusom a MHD pre **Slovensko, Česko, Maďarsko, Poľsko, Rakúsko a Ukrajinu**.
 
 - Vyhľadanie spojenia s prestupmi, aj cez hranice (vlak + autobus + MHD + pešie presuny)
 - Odchody zo zastávky / stanice, vrátane meškaní tam, kde sú dostupné v reálnom čase
 - Mapa trasy (MapLibre + OpenFreeMap)
-- Jazyky: SK, CZ, HU, PL, DE, EN
+- Jazyky: SK, CZ, HU, PL, DE, EN, UK (ukrajinčina)
 - Zdieľateľné odkazy (vyhľadávanie sa uloží do URL)
 
 ## Ako to funguje

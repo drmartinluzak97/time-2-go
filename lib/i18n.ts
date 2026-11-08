@@ -1,4 +1,4 @@
-export const LANGS = ["sk", "cs", "hu", "pl", "de", "en"] as const;
+export const LANGS = ["sk", "cs", "hu", "pl", "de", "en", "uk"] as const;
 export type Lang = (typeof LANGS)[number];
 
 export const LANG_NAMES: Record<Lang, string> = {
@@ -8,6 +8,7 @@ export const LANG_NAMES: Record<Lang, string> = {
   pl: "Polski",
   de: "Deutsch",
   en: "English",
+  uk: "Українська",
 };
 
 export const LOCALES: Record<Lang, string> = {
@@ -17,10 +18,11 @@ export const LOCALES: Record<Lang, string> = {
   pl: "pl-PL",
   de: "de-AT",
   en: "en-GB",
+  uk: "uk-UA",
 };
 
 const sk = {
-  tagline: "Spojenia vlakom, autobusom a MHD na Slovensku, v Česku, Maďarsku, Poľsku a Rakúsku",
+  tagline: "Spojenia vlakom, autobusom a MHD na Slovensku, v Česku, Maďarsku, Poľsku, Rakúsku a na Ukrajine",
   tabJourney: "Vyhľadať spojenie",
   tabDepartures: "Odchody zo zastávky",
   from: "Odkiaľ",
@@ -48,6 +50,7 @@ const sk = {
   earlier: "Skoršie spojenia",
   later: "Neskoršie spojenia",
   noResults: "Nenašli sa žiadne spojenia. Skúste iný čas alebo zastávky.",
+  noResultsPlace: "Ak ste vybrali mesto alebo adresu, skúste radšej konkrétnu zastávku či stanicu.",
   error: "Služba je dočasne nedostupná. Skúste to o chvíľu.",
   pickBoth: "Vyberte zastávku odchodu aj cieľa zo zoznamu.",
   pickStop: "Vyberte zastávku zo zoznamu.",
@@ -98,7 +101,7 @@ const sk = {
 type Dict = typeof sk;
 
 const cs: Dict = {
-  tagline: "Spojení vlakem, autobusem a MHD na Slovensku, v Česku, Maďarsku, Polsku a Rakousku",
+  tagline: "Spojení vlakem, autobusem a MHD na Slovensku, v Česku, Maďarsku, Polsku, Rakousku a na Ukrajině",
   tabJourney: "Vyhledat spojení",
   tabDepartures: "Odjezdy ze zastávky",
   from: "Odkud",
@@ -126,6 +129,7 @@ const cs: Dict = {
   earlier: "Dřívější spojení",
   later: "Pozdější spojení",
   noResults: "Nenalezena žádná spojení. Zkuste jiný čas nebo zastávky.",
+  noResultsPlace: "Pokud jste vybrali město nebo adresu, zkuste raději konkrétní zastávku či stanici.",
   error: "Služba je dočasně nedostupná. Zkuste to za chvíli.",
   pickBoth: "Vyberte výchozí i cílovou zastávku ze seznamu.",
   pickStop: "Vyberte zastávku ze seznamu.",
@@ -174,7 +178,7 @@ const cs: Dict = {
 };
 
 const hu: Dict = {
-  tagline: "Vonat-, busz- és helyi közlekedési kapcsolatok Szlovákiában, Csehországban, Magyarországon, Lengyelországban és Ausztriában",
+  tagline: "Vonat-, busz- és helyi közlekedési kapcsolatok Szlovákiában, Csehországban, Magyarországon, Lengyelországban, Ausztriában és Ukrajnában",
   tabJourney: "Útvonaltervezés",
   tabDepartures: "Indulások megállóból",
   from: "Honnan",
@@ -202,6 +206,7 @@ const hu: Dict = {
   earlier: "Korábbi járatok",
   later: "Későbbi járatok",
   noResults: "Nincs találat. Próbáljon más időpontot vagy megállót.",
+  noResultsPlace: "Ha települést vagy címet választott, próbáljon inkább konkrét megállót vagy állomást.",
   error: "A szolgáltatás átmenetileg nem érhető el. Próbálja újra később.",
   pickBoth: "Válassza ki az indulási és az érkezési megállót a listából.",
   pickStop: "Válasszon megállót a listából.",
@@ -250,7 +255,7 @@ const hu: Dict = {
 };
 
 const pl: Dict = {
-  tagline: "Połączenia kolejowe, autobusowe i komunikacja miejska na Słowacji, w Czechach, na Węgrzech, w Polsce i Austrii",
+  tagline: "Połączenia kolejowe, autobusowe i komunikacja miejska na Słowacji, w Czechach, na Węgrzech, w Polsce, Austrii i na Ukrainie",
   tabJourney: "Wyszukaj połączenie",
   tabDepartures: "Odjazdy z przystanku",
   from: "Skąd",
@@ -278,6 +283,7 @@ const pl: Dict = {
   earlier: "Wcześniejsze połączenia",
   later: "Późniejsze połączenia",
   noResults: "Nie znaleziono połączeń. Spróbuj innej godziny lub przystanków.",
+  noResultsPlace: "Jeśli wybrano miasto lub adres, spróbuj wybrać konkretny przystanek lub stację.",
   error: "Usługa jest chwilowo niedostępna. Spróbuj za chwilę.",
   pickBoth: "Wybierz przystanek początkowy i docelowy z listy.",
   pickStop: "Wybierz przystanek z listy.",
@@ -326,7 +332,7 @@ const pl: Dict = {
 };
 
 const de: Dict = {
-  tagline: "Zug-, Bus- und Öffi-Verbindungen in der Slowakei, Tschechien, Ungarn, Polen und Österreich",
+  tagline: "Zug-, Bus- und Öffi-Verbindungen in der Slowakei, Tschechien, Ungarn, Polen, Österreich und der Ukraine",
   tabJourney: "Verbindung suchen",
   tabDepartures: "Abfahrten",
   from: "Von",
@@ -354,6 +360,7 @@ const de: Dict = {
   earlier: "Frühere Verbindungen",
   later: "Spätere Verbindungen",
   noResults: "Keine Verbindungen gefunden. Versuchen Sie eine andere Zeit oder Haltestelle.",
+  noResultsPlace: "Wenn Sie einen Ort oder eine Adresse gewählt haben, versuchen Sie eine bestimmte Haltestelle oder einen Bahnhof.",
   error: "Der Dienst ist vorübergehend nicht erreichbar. Bitte später erneut versuchen.",
   pickBoth: "Bitte Start und Ziel aus der Liste wählen.",
   pickStop: "Bitte eine Haltestelle aus der Liste wählen.",
@@ -402,7 +409,7 @@ const de: Dict = {
 };
 
 const en: Dict = {
-  tagline: "Train, bus and public transport connections across Slovakia, Czechia, Hungary, Poland and Austria",
+  tagline: "Train, bus and public transport connections across Slovakia, Czechia, Hungary, Poland, Austria and Ukraine",
   tabJourney: "Plan a journey",
   tabDepartures: "Departures",
   from: "From",
@@ -430,6 +437,7 @@ const en: Dict = {
   earlier: "Earlier",
   later: "Later",
   noResults: "No connections found. Try another time or stops.",
+  noResultsPlace: "If you picked a town or an address, try a specific stop or station instead.",
   error: "The service is temporarily unavailable. Please try again shortly.",
   pickBoth: "Pick both the origin and destination from the list.",
   pickStop: "Pick a stop from the list.",
@@ -477,7 +485,84 @@ const en: Dict = {
   back: "Back to search",
 };
 
-export const DICTS: Record<Lang, Dict> = { sk, cs, hu, pl, de, en };
+const uk: Dict = {
+  tagline: "Залізничні, автобусні та міські перевезення в Словаччині, Чехії, Угорщині, Польщі, Австрії та Україні",
+  tabJourney: "Пошук маршруту",
+  tabDepartures: "Відправлення із зупинки",
+  from: "Звідки",
+  to: "Куди",
+  stop: "Зупинка",
+  placeholderPlace: "Зупинка, місто або адреса",
+  placeholderStop: "Назва зупинки або станції",
+  swap: "Поміняти напрямок",
+  departAt: "Відправлення",
+  arriveBy: "Прибуття",
+  now: "Зараз",
+  search: "Шукати",
+  showDepartures: "Показати відправлення",
+  searching: "Пошук…",
+  modes: "Транспорт",
+  rail: "Поїзд",
+  bus: "Автобус",
+  city: "Трамвай / метро",
+  ferry: "Пором",
+  transfers: "пересадки",
+  transfer0: "без пересадок",
+  transfer1: "1 пересадка",
+  transferN: "{n} пересадки",
+  transferMany: "{n} пересадок",
+  earlier: "Раніші рейси",
+  later: "Пізніші рейси",
+  noResults: "Маршрутів не знайдено. Спробуйте інший час або зупинки.",
+  noResultsPlace: "Якщо ви вибрали місто чи адресу, спробуйте натомість конкретну зупинку або станцію.",
+  error: "Сервіс тимчасово недоступний. Спробуйте трохи пізніше.",
+  pickBoth: "Виберіть зупинку відправлення та призначення зі списку.",
+  pickStop: "Виберіть зупинку зі списку.",
+  walk: "Пішки",
+  direction: "напрямок",
+  platform: "пл.",
+  delay: "затримка",
+  onTime: "вчасно",
+  cancelled: "скасовано",
+  realtime: "Дані в реальному часі",
+  operator: "Перевізник",
+  tickets: "Квитки",
+  stops: "зупинок",
+  details: "Деталі",
+  hide: "Сховати",
+  noDepartures: "У цей час відправлень немає.",
+  attribution: "Дані: Transitous та відкриті дані перевізників. Карта © OpenStreetMap, OpenFreeMap.",
+  disclaimer: "Інформація без гарантії. Перед поїздкою перевірте рейс у перевізника.",
+  language: "Мова",
+  map: "Карта",
+  showMap: "Показати карту",
+  hideMap: "Сховати карту",
+  maxTransfers: "Макс. кількість пересадок",
+  any: "Будь-яка",
+  directOnly: "Лише прямі рейси",
+  via: "Через зупинку",
+  addVia: "+ Через зупинку",
+  removeVia: "Видалити",
+  transferTime: "Час на пересадку",
+  minTransferTime: "Мін. час на пересадку",
+  options: "Параметри",
+  credit: "Створив Martin Lužák разом із Claude, 2026",
+  favorites: "Обрані маршрути",
+  favoriteStops: "Обрані зупинки",
+  recent: "Останні пошуки",
+  recentStops: "Останні зупинки",
+  addFavorite: "Додати до обраного",
+  inFavorites: "В обраному",
+  saveHistory: "Зберігати історію в цьому браузері",
+  clearHistory: "Очистити історію",
+  rename: "Перейменувати",
+  remove: "Видалити",
+  save: "Зберегти",
+  privacy: "Конфіденційність",
+  back: "Назад до пошуку",
+};
+
+export const DICTS: Record<Lang, Dict> = { sk, cs, hu, pl, de, en, uk };
 export type T = Dict;
 
 export function transfersLabel(t: T, n: number): string {
