@@ -67,6 +67,17 @@ const sk = {
   attribution: "Dáta: Transitous a otvorené dáta dopravcov a krajín. Mapa © OpenStreetMap, OpenFreeMap.",
   disclaimer: "Informatívne údaje bez záruky. Pred cestou si overte spoj u dopravcu.",
   language: "Jazyk",
+  map: "Mapa",
+  showMap: "Zobraziť mapu",
+  hideMap: "Skryť mapu",
+  maxTransfers: "Max. počet prestupov",
+  any: "Ľubovoľne",
+  directOnly: "Len priame spoje",
+  via: "Cez zastávku",
+  addVia: "+ Cez zastávku",
+  removeVia: "Odstrániť",
+  transferTime: "Čas na prestup",
+  options: "Možnosti",
 };
 
 type Dict = typeof sk;
@@ -119,6 +130,17 @@ const cs: Dict = {
   attribution: "Data: Transitous a otevřená data dopravců a států. Mapa © OpenStreetMap, OpenFreeMap.",
   disclaimer: "Informativní údaje bez záruky. Před cestou si spoj ověřte u dopravce.",
   language: "Jazyk",
+  map: "Mapa",
+  showMap: "Zobrazit mapu",
+  hideMap: "Skrýt mapu",
+  maxTransfers: "Max. počet přestupů",
+  any: "Libovolně",
+  directOnly: "Jen přímé spoje",
+  via: "Přes zastávku",
+  addVia: "+ Přes zastávku",
+  removeVia: "Odebrat",
+  transferTime: "Čas na přestup",
+  options: "Možnosti",
 };
 
 const hu: Dict = {
@@ -169,6 +191,17 @@ const hu: Dict = {
   attribution: "Adatok: Transitous és a szolgáltatók nyílt adatai. Térkép © OpenStreetMap, OpenFreeMap.",
   disclaimer: "Tájékoztató adatok, garancia nélkül. Utazás előtt ellenőrizze a szolgáltatónál.",
   language: "Nyelv",
+  map: "Térkép",
+  showMap: "Térkép mutatása",
+  hideMap: "Térkép elrejtése",
+  maxTransfers: "Max. átszállás",
+  any: "Bármennyi",
+  directOnly: "Csak közvetlen járat",
+  via: "Megálló érintésével",
+  addVia: "+ Érintett megálló",
+  removeVia: "Eltávolítás",
+  transferTime: "Átszállási idő",
+  options: "Beállítások",
 };
 
 const pl: Dict = {
@@ -219,6 +252,17 @@ const pl: Dict = {
   attribution: "Dane: Transitous i otwarte dane przewoźników. Mapa © OpenStreetMap, OpenFreeMap.",
   disclaimer: "Dane informacyjne bez gwarancji. Przed podróżą sprawdź połączenie u przewoźnika.",
   language: "Język",
+  map: "Mapa",
+  showMap: "Pokaż mapę",
+  hideMap: "Ukryj mapę",
+  maxTransfers: "Maks. liczba przesiadek",
+  any: "Dowolnie",
+  directOnly: "Tylko bezpośrednie",
+  via: "Przez przystanek",
+  addVia: "+ Przez przystanek",
+  removeVia: "Usuń",
+  transferTime: "Czas na przesiadkę",
+  options: "Opcje",
 };
 
 const de: Dict = {
@@ -269,6 +313,17 @@ const de: Dict = {
   attribution: "Daten: Transitous und offene Daten der Verkehrsunternehmen. Karte © OpenStreetMap, OpenFreeMap.",
   disclaimer: "Angaben ohne Gewähr. Bitte vor der Fahrt beim Verkehrsunternehmen prüfen.",
   language: "Sprache",
+  map: "Karte",
+  showMap: "Karte einblenden",
+  hideMap: "Karte ausblenden",
+  maxTransfers: "Max. Umstiege",
+  any: "Beliebig",
+  directOnly: "Nur Direktverbindungen",
+  via: "Über Haltestelle",
+  addVia: "+ Über Haltestelle",
+  removeVia: "Entfernen",
+  transferTime: "Umstiegszeit",
+  options: "Optionen",
 };
 
 const en: Dict = {
@@ -319,6 +374,17 @@ const en: Dict = {
   attribution: "Data: Transitous and open data from operators. Map © OpenStreetMap, OpenFreeMap.",
   disclaimer: "For information only. Check with the operator before you travel.",
   language: "Language",
+  map: "Map",
+  showMap: "Show map",
+  hideMap: "Hide map",
+  maxTransfers: "Max. transfers",
+  any: "Any",
+  directOnly: "Direct only",
+  via: "Via stop",
+  addVia: "+ Via stop",
+  removeVia: "Remove",
+  transferTime: "Transfer time",
+  options: "Options",
 };
 
 export const DICTS: Record<Lang, Dict> = { sk, cs, hu, pl, de, en };

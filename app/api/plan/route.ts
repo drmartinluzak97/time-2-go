@@ -17,6 +17,8 @@ export async function GET(req: Request) {
       "language",
       "pedestrianProfile",
       "requireBikeTransport",
+      "via",
+      "viaMinimumStay",
     ],
     60,
   );

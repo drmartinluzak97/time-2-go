@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import PlaceInput from "./PlaceInput";
 import ItineraryCard from "./ItineraryCard";
 import Departures from "./Departures";
+import Flag from "./Flag";
 import { DICTS, LANGS, LANG_NAMES, LOCALES, type Lang } from "@/lib/i18n";
 import { MODE_GROUPS, type ModeGroup, type PlanResponse, type Selected } from "@/lib/motis";
 
@@ -12,6 +13,15 @@ const RouteMap = dynamic(() => import("./RouteMap"), { ssr: false, loading: () =
 
 type Tab = "journey" | "departures";
 const ALL_GROUPS: ModeGroup[] = ["rail", "bus", "city", "ferry"];
+const FLAG_ORDER: Lang[] = ["sk", "cs", "de", "hu", "en", "pl"];
+const TRANSFER_OPTIONS = [1, 2, 3, 4, 5];
+const STAY_OPTIONS = [0, 3, 5, 10, 15, 30, 60, 90, 120];
+const MAX_VIAS = 2;
+
+interface Via {
+  place: Selected | null;
+  stay: number; // minutes
+}
 
 function encodePlace(p: Selected | null): string | null {
   return p ? [p.isStop ? "s" : "p", p.id, p.lat.toFixed(6), p.lon.toFixed(6), p.name].join("~") : null;
@@ -45,6 +55,10 @@ export default function App() {
   const [when, setWhen] = useState(""); // datetime-local value; empty = now
   const [arriveBy, setArriveBy] = useState(false);
   const [groups, setGroups] = useState<ModeGroup[]>(ALL_GROUPS);
+  const [maxTransfers, setMaxTransfers] = useState<number | null>(null);
+  const [directOnly, setDirectOnly] = useState(false);
+  const [vias, setVias] = useState<Via[]>([]);
+  const [showMap, setShowMap] = useState(true);
 
   const [plan, setPlan] = useState<PlanResponse | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
@@ -67,6 +81,18 @@ export default function App() {
     if (q.get("arrive") === "1") setArriveBy(true);
     const m = q.get("modes");
     if (m) setGroups(m.split(",").filter((g): g is ModeGroup => (ALL_GROUPS as string[]).includes(g)));
+    const mt = Number(q.get("maxTransfers"));
+    if (TRANSFER_OPTIONS.includes(mt)) setMaxTransfers(mt);
+    if (q.get("direct") === "1") setDirectOnly(true);
+    const restoredVias: Via[] = [];
+    for (let i = 1; i <= MAX_VIAS; i++) {
+      const place = decodePlace(q.get(`via${i}`));
+      if (place) restoredVias.push({ place, stay: Number(q.get(`stay${i}`)) || 0 });
+    }
+    setVias(restoredVias);
+    try {
+      if (localStorage.getItem("showMap") === "0") setShowMap(false);
+    } catch { /* storage unavailable */ }
     setRestored({ search: Boolean(f && d) });
   }, []);
 
@@ -87,9 +113,21 @@ export default function App() {
     if (when) q.set("time", when);
     if (arriveBy) q.set("arrive", "1");
     if (groups.length !== ALL_GROUPS.length) q.set("modes", groups.join(","));
+    if (maxTransfers !== null) q.set("maxTransfers", String(maxTransfers));
+    if (directOnly) q.set("direct", "1");
+    vias.forEach((v, i) => {
+      const enc = encodePlace(v.place);
+      if (!enc) return;
+      q.set(`via${i + 1}`, enc);
+      if (v.stay) q.set(`stay${i + 1}`, String(v.stay));
+    });
     const qs = q.toString();
     window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
-  }, [restored, tab, from, to, stop, when, arriveBy, groups]);
+  }, [restored, tab, from, to, stop, when, arriveBy, groups, maxTransfers, directOnly, vias]);
+
+  useEffect(() => {
+    try { localStorage.setItem("showMap", showMap ? "1" : "0"); } catch { /* ignore */ }
+  }, [showMap]);
 
   const search = useCallback(
     async (cursor?: string) => {
@@ -111,6 +149,13 @@ export default function App() {
         if (groups.length && groups.length !== ALL_GROUPS.length) {
           params.set("transitModes", groups.flatMap((g) => MODE_GROUPS[g]).join(","));
         }
+        if (directOnly) params.set("maxTransfers", "0");
+        else if (maxTransfers !== null) params.set("maxTransfers", String(maxTransfers));
+        const viaStops = vias.filter((v) => v.place?.isStop);
+        if (viaStops.length) {
+          params.set("via", viaStops.map((v) => v.place!.id).join(","));
+          params.set("viaMinimumStay", viaStops.map((v) => v.stay).join(","));
+        }
         if (cursor) params.set("pageCursor", cursor);
         const res = await fetch(`/api/plan?${params}`);
         if (!res.ok) throw new Error(String(res.status));
@@ -122,7 +167,7 @@ export default function App() {
         setStatus("error");
       }
     },
-    [from, to, when, arriveBy, groups, lang, t.pickBoth],
+    [from, to, when, arriveBy, groups, maxTransfers, directOnly, vias, lang, t.pickBoth],
   );
 
   // Run the search automatically when a shared link is opened.
@@ -133,8 +178,15 @@ export default function App() {
     }
   }, [restored, search]);
 
-  const itineraries = useMemo(() => plan?.itineraries ?? [], [plan]);
+  const itineraries = useMemo(
+    () => [...(plan?.itineraries ?? [])].sort((x, y) => x.startTime.localeCompare(y.startTime) || x.endTime.localeCompare(y.endTime)),
+    [plan],
+  );
   const current = itineraries[selected] ?? null;
+
+  function updateVia(i: number, patch: Partial<Via>) {
+    setVias((vs) => vs.map((v, j) => (j === i ? { ...v, ...patch } : v)));
+  }
 
   function toggleGroup(g: ModeGroup) {
     setGroups((gs) => (gs.includes(g) ? gs.filter((x) => x !== g) : [...gs, g]));
@@ -147,17 +199,36 @@ export default function App() {
           <span className="logo" aria-hidden>⏱</span>
           <span>time<span className="accent">2</span>go</span>
         </a>
-        <label className="lang">
-          <span className="sr-only">{t.language}</span>
-          <select value={lang} onChange={(e) => setLang(e.target.value as Lang)}>
-            {LANGS.map((l) => (
-              <option key={l} value={l}>{LANG_NAMES[l]}</option>
+        <div className="top-actions">
+          <div className="flags" role="group" aria-label={t.language}>
+            {FLAG_ORDER.map((l) => (
+              <button
+                key={l}
+                type="button"
+                className={`flag-btn ${l === lang ? "on" : ""}`}
+                title={LANG_NAMES[l]}
+                aria-label={LANG_NAMES[l]}
+                aria-pressed={l === lang}
+                onClick={() => setLang(l)}
+              >
+                <Flag lang={l} />
+              </button>
             ))}
-          </select>
-        </label>
+          </div>
+          <button
+            type="button"
+            className={`map-toggle ${showMap ? "on" : ""}`}
+            aria-pressed={showMap}
+            title={showMap ? t.hideMap : t.showMap}
+            onClick={() => setShowMap((v) => !v)}
+          >
+            <span aria-hidden>🗺</span>
+            <span className="map-toggle-label">{t.map}</span>
+          </button>
+        </div>
       </header>
 
-      <main className="layout">
+      <main className={`layout ${showMap ? "" : "no-map"}`}>
         <section className="panel">
           <p className="tagline">{t.tagline}</p>
 
@@ -196,6 +267,41 @@ export default function App() {
                   <PlaceInput label={t.to} placeholder={t.placeholderPlace} value={to} onChange={setTo} lang={lang} />
                 </div>
 
+                {vias.map((v, i) => (
+                  <div className="via" key={i}>
+                    <PlaceInput
+                      label={vias.length > 1 ? `${t.via} ${i + 1}` : t.via}
+                      placeholder={t.placeholderStop}
+                      value={v.place}
+                      onChange={(p) => updateVia(i, { place: p })}
+                      lang={lang}
+                      stopsOnly
+                    />
+                    <label className="field stay">
+                      <span>{t.transferTime}</span>
+                      <select value={v.stay} onChange={(e) => updateVia(i, { stay: Number(e.target.value) })}>
+                        {STAY_OPTIONS.map((m) => (
+                          <option key={m} value={m}>{m} min</option>
+                        ))}
+                      </select>
+                    </label>
+                    <button
+                      type="button"
+                      className="via-remove"
+                      title={t.removeVia}
+                      aria-label={t.removeVia}
+                      onClick={() => setVias((vs) => vs.filter((_, j) => j !== i))}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+                {vias.length < MAX_VIAS && (
+                  <button type="button" className="link add-via" onClick={() => setVias((vs) => [...vs, { place: null, stay: 0 }])}>
+                    {t.addVia}
+                  </button>
+                )}
+
                 <div className="row">
                   <div className="seg" role="group">
                     <button type="button" className={!arriveBy ? "on" : ""} onClick={() => setArriveBy(false)}>{t.departAt}</button>
@@ -222,6 +328,27 @@ export default function App() {
                     </label>
                   ))}
                 </fieldset>
+
+                <div className="options">
+                  <label className="field transfers">
+                    <span>{t.maxTransfers}</span>
+                    <select
+                      value={directOnly ? "" : maxTransfers ?? ""}
+                      disabled={directOnly}
+                      onChange={(e) => setMaxTransfers(e.target.value === "" ? null : Number(e.target.value))}
+                    >
+                      <option value="">{directOnly ? "0" : t.any}</option>
+                      {TRANSFER_OPTIONS.map((n) => (
+                        <option key={n} value={n}>{n}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className={`switch ${directOnly ? "on" : ""}`}>
+                    <input type="checkbox" checked={directOnly} onChange={(e) => setDirectOnly(e.target.checked)} />
+                    <span className="switch-track" aria-hidden><span className="switch-dot" /></span>
+                    {t.directOnly}
+                  </label>
+                </div>
 
                 <button className="primary" type="submit" disabled={status === "loading"}>
                   {status === "loading" ? t.searching : t.search}
@@ -266,13 +393,15 @@ export default function App() {
           </footer>
         </section>
 
-        <section className="map-wrap" aria-hidden>
-          <RouteMap
-            itinerary={tab === "journey" ? current : null}
-            from={tab === "journey" ? from : stop}
-            to={tab === "journey" ? to : null}
-          />
-        </section>
+        {showMap && (
+          <section className="map-wrap" aria-hidden>
+            <RouteMap
+              itinerary={tab === "journey" ? current : null}
+              from={tab === "journey" ? from : stop}
+              to={tab === "journey" ? to : null}
+            />
+          </section>
+        )}
       </main>
     </div>
   );
