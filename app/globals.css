@@ -76,7 +76,7 @@ a { color: var(--accent); }
 @media (max-width: 860px) {
   .layout { grid-template-columns: 1fr; }
   .panel { height: auto; overflow: visible; order: 1; }
-  .map-wrap { position: relative; top: 0; height: 42vh; order: 0; }
+  .map-wrap { display: none; }
 }
 
 @media (max-width: 520px) {
@@ -256,3 +256,17 @@ input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px s
 .doc .lead { font-size: 17px; font-weight: 600; }
 .doc .back { font-weight: 600; text-decoration: none; }
 .doc .updated { margin-top: 32px; font-size: 13px; color: var(--muted); }
+
+/* ---------- map below the form on phones ---------- */
+.map-inline { margin-top: 12px; height: 38vh; min-height: 220px; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+
+/* ---------- country filter ---------- */
+.countries { border: 0; padding: 0; margin: 0 0 12px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.countries legend { float: left; margin-right: 4px; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.country-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px 4px 6px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); user-select: none; }
+.country-chip input { position: absolute; opacity: 0; pointer-events: none; }
+.country-chip .flag { width: 20px; height: 14px; opacity: 0.45; filter: grayscale(1); }
+.country-chip.on { border-color: var(--accent); color: var(--text); }
+.country-chip.on .flag { opacity: 1; filter: none; }
+.country-chip:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.country-chip:has(input:disabled) { cursor: not-allowed; }

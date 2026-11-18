@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import PlaceInput from "./PlaceInput";
 import { StopLists } from "./SavedLists";
 import type { Saved } from "@/lib/saved";
@@ -17,9 +17,11 @@ interface Props {
   stop: Selected | null;
   onStop: (s: Selected | null) => void;
   saved: Saved;
+  countries: readonly string[];
+  map?: ReactNode;
 }
 
-export default function Departures({ t, lang, locale, stop: selectedStop, onStop, saved }: Props) {
+export default function Departures({ t, lang, locale, stop: selectedStop, onStop, saved, countries, map }: Props) {
   const [data, setData] = useState<StopTimesResponse | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -55,11 +57,13 @@ export default function Departures({ t, lang, locale, stop: selectedStop, onStop
           load();
         }}
       >
-        <PlaceInput label={t.stop} placeholder={t.placeholderStop} value={selectedStop} onChange={onStop} lang={lang} stopsOnly />
+        <PlaceInput label={t.stop} placeholder={t.placeholderStop} value={selectedStop} onChange={onStop} lang={lang} stopsOnly countries={countries} />
         <button className="primary" type="submit" disabled={status === "loading"}>
           {status === "loading" ? t.searching : t.showDepartures}
         </button>
       </form>
+
+      {map}
 
       {message && <p className="notice">{message}</p>}
       {status === "error" && <p className="notice error">{t.error}</p>}

@@ -1,4 +1,5 @@
 import type { Lang } from "@/lib/i18n";
+import type { Country } from "@/lib/motis";
 
 // Simplified inline SVG flags (emoji flags don't render on Windows).
 export default function Flag({ lang }: { lang: Lang }) {
@@ -67,4 +68,18 @@ export default function Flag({ lang }: { lang: Lang }) {
         </svg>
       );
   }
+}
+
+const COUNTRY_TO_LANG: Partial<Record<Country, Lang>> = { SK: "sk", CZ: "cs", HU: "hu", PL: "pl", UA: "uk" };
+
+export function CountryFlag({ country }: { country: Country }) {
+  if (country === "AT") {
+    return (
+      <svg width={24} height={16} viewBox="0 0 30 20" aria-hidden className="flag">
+        <rect width="30" height="20" fill="#c8102e" />
+        <rect y="6.67" width="30" height="6.66" fill="#fff" />
+      </svg>
+    );
+  }
+  return <Flag lang={COUNTRY_TO_LANG[country]!} />;
 }
