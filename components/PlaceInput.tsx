@@ -10,6 +10,7 @@ interface Props {
   onChange: (v: Selected | null) => void;
   lang: string;
   stopsOnly?: boolean;
+  countries: readonly string[];
 }
 
 const KIND_ICON: Record<string, string> = {
@@ -23,7 +24,7 @@ function iconFor(m: GeocodeMatch): string {
   return first ? KIND_ICON[modeKind(first)] : "🚏";
 }
 
-export default function PlaceInput({ label, placeholder, value, onChange, lang, stopsOnly }: Props) {
+export default function PlaceInput({ label, placeholder, value, onChange, lang, stopsOnly, countries }: Props) {
   const id = useId();
   const [text, setText] = useState(value?.name ?? "");
   const [matches, setMatches] = useState<GeocodeMatch[]>([]);
@@ -54,7 +55,7 @@ export default function PlaceInput({ label, placeholder, value, onChange, lang, 
         if (stopsOnly) params.set("type", "STOP");
         const res = await fetch(`/api/geocode?${params}`, { signal: ctrl.signal });
         const data: GeocodeMatch[] = res.ok ? await res.json() : [];
-        setMatches(cleanMatches(Array.isArray(data) ? data : []));
+        setMatches(cleanMatches(Array.isArray(data) ? data : [], countries));
         setActive(0);
         setOpen(true);
       } catch {
@@ -67,7 +68,7 @@ export default function PlaceInput({ label, placeholder, value, onChange, lang, 
       clearTimeout(timer);
       ctrl.abort();
     };
-  }, [text, lang, stopsOnly]);
+  }, [text, lang, stopsOnly, countries]);
 
   function pick(m: GeocodeMatch) {
     typed.current = false;

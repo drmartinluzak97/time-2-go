@@ -106,7 +106,27 @@ export interface Selected {
   isStop: boolean;
 }
 
-export const COUNTRIES = ["SK", "CZ", "HU", "PL", "AT", "UA"] as const;
+export const COUNTRIES = ["SK", "CZ", "AT", "HU", "PL", "UA"] as const;
+export type Country = (typeof COUNTRIES)[number];
+
+// Rough bounding boxes [minLat, minLon, maxLat, maxLon], used only when the
+// geocoder returns a result without a country code.
+const COUNTRY_BOX: Record<Country, [number, number, number, number]> = {
+  SK: [47.7, 16.8, 49.65, 22.6],
+  CZ: [48.5, 12.05, 51.1, 18.9],
+  AT: [46.35, 9.5, 49.05, 17.2],
+  HU: [45.7, 16.1, 48.6, 22.95],
+  PL: [49.0, 14.1, 54.9, 24.2],
+  UA: [44.3, 22.1, 52.4, 40.3],
+};
+
+export function inCountries(m: { country?: string; lat: number; lon: number }, allowed: readonly string[]): boolean {
+  if (m.country) return allowed.includes(m.country);
+  return allowed.some((c) => {
+    const box = COUNTRY_BOX[c as Country];
+    return box && m.lat >= box[0] && m.lat <= box[2] && m.lon >= box[1] && m.lon <= box[3];
+  });
+}
 
 export type ModeGroup = "rail" | "bus" | "city" | "ferry";
 export const MODE_GROUPS: Record<ModeGroup, string[]> = {
@@ -223,7 +243,7 @@ export function delayMinutes(actual?: string, scheduled?: string): number | null
 /** Clean up geocoder output: drop broken entries, merge duplicates from different feeds,
  *  prefer our countries, and put a station before a same-named town (town centres are
  *  sometimes not connected to any stop in the routing data). */
-export function cleanMatches(matches: GeocodeMatch[]): GeocodeMatch[] {
+export function cleanMatches(matches: GeocodeMatch[], allowed: readonly string[] = COUNTRIES): GeocodeMatch[] {
   const norm = (x: string) => x.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
   const km = (a: GeocodeMatch, b: GeocodeMatch) => {
     const dLat = (a.lat - b.lat) * 111;
@@ -233,6 +253,7 @@ export function cleanMatches(matches: GeocodeMatch[]): GeocodeMatch[] {
   const ours = (m: GeocodeMatch) => (m.country && (COUNTRIES as readonly string[]).includes(m.country) ? 0 : 1);
   const valid = matches
     .filter((m) => !(m.lat === -1 && m.lon === -1) && Number.isFinite(m.lat))
+    .filter((m) => inCountries(m, allowed))
     .sort((a, b) => ours(a) - ours(b));
 
   const out: GeocodeMatch[] = [];

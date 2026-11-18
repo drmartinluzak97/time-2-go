@@ -5,11 +5,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import PlaceInput from "./PlaceInput";
 import ItineraryCard from "./ItineraryCard";
 import Departures from "./Departures";
-import Flag from "./Flag";
+import Flag, { CountryFlag } from "./Flag";
 import { JourneyLists } from "./SavedLists";
 import { useSaved, type SavedJourney } from "@/lib/saved";
 import { DICTS, LANGS, LANG_NAMES, LOCALES, type Lang } from "@/lib/i18n";
-import { MODE_GROUPS, type ModeGroup, type PlanResponse, type Selected } from "@/lib/motis";
+import { COUNTRIES, MODE_GROUPS, type Country, type ModeGroup, type PlanResponse, type Selected } from "@/lib/motis";
 
 const RouteMap = dynamic(() => import("./RouteMap"), { ssr: false, loading: () => <div className="map" /> });
 
@@ -62,6 +62,8 @@ export default function App() {
   const [minTransfer, setMinTransfer] = useState(0);
   const [vias, setVias] = useState<Via[]>([]);
   const [showMap, setShowMap] = useState(true);
+  const [countries, setCountries] = useState<Country[]>([...COUNTRIES]);
+  const [narrow, setNarrow] = useState(false);
 
   const [plan, setPlan] = useState<PlanResponse | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
@@ -99,6 +101,11 @@ export default function App() {
     setVias(restoredVias);
     try {
       if (localStorage.getItem("showMap") === "0") setShowMap(false);
+      const savedCountries = JSON.parse(localStorage.getItem("countries") || "null");
+      if (Array.isArray(savedCountries)) {
+        const valid = COUNTRIES.filter((c) => savedCountries.includes(c));
+        if (valid.length) setCountries(valid);
+      }
     } catch { /* storage unavailable */ }
     setRestored({ search: Boolean(f && d) });
   }, []);
@@ -136,6 +143,20 @@ export default function App() {
   useEffect(() => {
     try { localStorage.setItem("showMap", showMap ? "1" : "0"); } catch { /* ignore */ }
   }, [showMap]);
+
+  useEffect(() => {
+    if (!restored) return;
+    try { localStorage.setItem("countries", JSON.stringify(countries)); } catch { /* ignore */ }
+  }, [countries, restored]);
+
+  // On phones (and in the Android app) the map goes below the search form.
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 860px)");
+    const update = () => setNarrow(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
   const snapshot = useMemo<SavedJourney | null>(
     () =>
@@ -229,9 +250,25 @@ export default function App() {
     setVias((vs) => vs.map((v, j) => (j === i ? { ...v, ...patch } : v)));
   }
 
+  function toggleCountry(c: Country) {
+    setCountries((cs) => {
+      if (cs.includes(c)) return cs.length > 1 ? cs.filter((x) => x !== c) : cs; // keep at least one
+      return COUNTRIES.filter((x) => x === c || cs.includes(x));
+    });
+  }
+
   function toggleGroup(g: ModeGroup) {
     setGroups((gs) => (gs.includes(g) ? gs.filter((x) => x !== g) : [...gs, g]));
   }
+
+  const mapEl = (
+    <RouteMap
+      itinerary={tab === "journey" ? current : null}
+      from={tab === "journey" ? from : stop}
+      to={tab === "journey" ? to : null}
+    />
+  );
+  const inlineMap = showMap && narrow ? <section className="map-inline" aria-hidden>{mapEl}</section> : null;
 
   return (
     <div className="shell">
@@ -273,6 +310,22 @@ export default function App() {
         <section className="panel">
           <p className="tagline">{t.tagline}</p>
 
+          <fieldset className="countries">
+            <legend>{t.countries}</legend>
+            {COUNTRIES.map((c) => (
+              <label key={c} className={`country-chip ${countries.includes(c) ? "on" : ""}`} title={t.countryNames[c]}>
+                <input
+                  type="checkbox"
+                  checked={countries.includes(c)}
+                  disabled={countries.length === 1 && countries.includes(c)}
+                  onChange={() => toggleCountry(c)}
+                />
+                <CountryFlag country={c} />
+                <span>{c}</span>
+              </label>
+            ))}
+          </fieldset>
+
           <div className="tabs" role="tablist">
             <button role="tab" aria-selected={tab === "journey"} className={tab === "journey" ? "on" : ""} onClick={() => setTab("journey")}>
               {t.tabJourney}
@@ -292,7 +345,7 @@ export default function App() {
                 }}
               >
                 <div className="od">
-                  <PlaceInput label={t.from} placeholder={t.placeholderPlace} value={from} onChange={setFrom} lang={lang} />
+                  <PlaceInput label={t.from} placeholder={t.placeholderPlace} value={from} onChange={setFrom} lang={lang} countries={countries} />
                   <button
                     type="button"
                     className="swap"
@@ -305,7 +358,7 @@ export default function App() {
                   >
                     ⇅
                   </button>
-                  <PlaceInput label={t.to} placeholder={t.placeholderPlace} value={to} onChange={setTo} lang={lang} />
+                  <PlaceInput label={t.to} placeholder={t.placeholderPlace} value={to} onChange={setTo} lang={lang} countries={countries} />
                 </div>
 
                 {vias.map((v, i) => (
@@ -317,6 +370,7 @@ export default function App() {
                       onChange={(p) => updateVia(i, { place: p })}
                       lang={lang}
                       stopsOnly
+                      countries={countries}
                     />
                     <label className="field stay">
                       <span>{t.transferTime}</span>
@@ -404,6 +458,8 @@ export default function App() {
                 </button>
               </form>
 
+              {inlineMap}
+
               {message && <p className="notice">{message}</p>}
               {status === "error" && <p className="notice error">{t.error}</p>}
 
@@ -451,7 +507,16 @@ export default function App() {
               <JourneyLists saved={saved} t={t} onOpen={openJourney} />
             </>
           ) : (
-            <Departures t={t} lang={lang} locale={locale} stop={stop} onStop={setStop} saved={saved} />
+            <Departures
+              t={t}
+              lang={lang}
+              locale={locale}
+              stop={stop}
+              onStop={setStop}
+              saved={saved}
+              countries={countries}
+              map={inlineMap}
+            />
           )}
 
           <footer className="foot">
@@ -470,15 +535,7 @@ export default function App() {
           </footer>
         </section>
 
-        {showMap && (
-          <section className="map-wrap" aria-hidden>
-            <RouteMap
-              itinerary={tab === "journey" ? current : null}
-              from={tab === "journey" ? from : stop}
-              to={tab === "journey" ? to : null}
-            />
-          </section>
-        )}
+        {showMap && !narrow && <section className="map-wrap" aria-hidden>{mapEl}</section>}
       </main>
     </div>
   );
