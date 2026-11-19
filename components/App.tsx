@@ -1,5 +1,7 @@
 "use client";
 
+import { openConsentSettings } from "./Consent";
+import { CONSENT_TEXTS } from "@/lib/consent";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import PlaceInput from "./PlaceInput";
@@ -525,7 +527,11 @@ export default function App() {
             </button>
             <p>{t.disclaimer}</p>
             <p>{t.attribution}</p>
-            <p><a href={`/sukromie?lang=${lang}`}>{t.privacy}</a></p>
+            <p>
+              <a href={`/sukromie?lang=${lang}`}>{t.privacy}</a>
+              <span aria-hidden> · </span>
+              <button type="button" className="linkish" onClick={openConsentSettings}>{CONSENT_TEXTS[lang].settingsLink}</button>
+            </p>
             <p className="credit">{t.credit}</p>
             <p className="contact">
               <a href="https://martinluzak.sk" target="_blank" rel="noopener">martinluzak.sk</a>

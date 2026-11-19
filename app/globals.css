@@ -270,3 +270,6 @@ input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px s
 .country-chip.on .flag { opacity: 1; filter: none; }
 .country-chip:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
 .country-chip:has(input:disabled) { cursor: not-allowed; }
+
+/* Link-styled button (e.g. "Cookie settings" in the footer) */
+.linkish { background: none; border: 0; padding: 0; font: inherit; color: var(--accent); text-decoration: underline; cursor: pointer; }
