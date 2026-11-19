@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { Consent } from "@/components/Consent";
 
 export const metadata: Metadata = {
   title: "time2go – cestovné poriadky SK · CZ · HU · PL · AT · UA",
@@ -19,7 +20,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="sk">
-      <body>{children}</body>
+      <body>
+        {children}
+        <Consent />
+      </body>
     </html>
   );
 }

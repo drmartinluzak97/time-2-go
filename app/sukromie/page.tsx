@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { DICTS, LANGS, type Lang } from "@/lib/i18n";
 import { PRIVACY } from "@/lib/privacy";
+import { CONSENT_TEXTS } from "@/lib/consent";
+import { openConsentSettings } from "@/components/Consent";
 
 export default function PrivacyPage() {
   const [lang, setLang] = useState<Lang>("sk");
@@ -44,6 +46,9 @@ export default function PrivacyPage() {
             ))}
           </section>
         ))}
+        <p>
+          <button type="button" className="linkish" onClick={openConsentSettings}>{CONSENT_TEXTS[lang].settingsLink}</button>
+        </p>
         <p className="updated">{p.updated}</p>
       </main>
     </div>
